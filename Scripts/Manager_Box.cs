@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Carrot;
 using UnityEngine;
 
 public class Manager_Box : MonoBehaviour
@@ -23,5 +24,18 @@ public class Manager_Box : MonoBehaviour
             box_obj.transform.localScale=new Vector3(1f,1f,1f);
             box_obj.transform.localRotation=Quaternion.identity;
         }
+    }
+
+    public int Get_Length_Box(){
+        return this.length_box;
+    }
+
+    public void Show_Change_Length_Box(){
+        Carrot_Window_Input box_input_length=this.app.carrot.Show_input("Length","Enter number table box",this.Get_Length_Box().ToString(),Window_Input_value_Type.input_field);
+        box_input_length.set_act_done(this.Act_Done_Input);
+    }
+
+    private void Act_Done_Input(string s_val){
+        this.app.carrot.Show_msg(s_val);
     }
 }
