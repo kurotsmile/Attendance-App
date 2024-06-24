@@ -15,6 +15,7 @@ public class Apps : MonoBehaviour
     void Start()
     {
         carrot.Load_Carrot(Check_Exit_app); 
+        manager_Box.On_load();
         manager_Box.Create_table();
     }
 
@@ -30,5 +31,17 @@ public class Apps : MonoBehaviour
         item_length.set_tip("Change the number of objects");
         item_length.set_act(this.manager_Box.Show_Change_Length_Box);
         box_setting.update_color_table_row();
+    }
+
+    public void Show_List_Table(){
+        carrot.play_sound_click();
+    }
+
+    public void Btn_Export(){
+        carrot.play_sound_click();
+    }
+
+    public void Btn_Import(){
+        carrot.play_sound_click();
     }
 }
