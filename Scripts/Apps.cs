@@ -8,6 +8,7 @@ public class Apps : MonoBehaviour
     [Header("Main Obj")]
     public Carrot.Carrot carrot;
     public Manager_Box manager_Box;
+    public Carrot_File file;
 
     [Header("Asset Icon")]
     public Sprite sp_icon_length;
@@ -35,6 +36,7 @@ public class Apps : MonoBehaviour
 
     public void Show_List_Table(){
         carrot.play_sound_click();
+        manager_Box.Show_List_Table();
     }
 
     public void Btn_Export(){
@@ -43,5 +45,6 @@ public class Apps : MonoBehaviour
 
     public void Btn_Import(){
         carrot.play_sound_click();
+        manager_Box.Act_import();
     }
 }
