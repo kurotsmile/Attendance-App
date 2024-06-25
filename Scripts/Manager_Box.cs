@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using Carrot;
 using SimpleFileBrowser;
 using UnityEngine;
@@ -36,10 +35,10 @@ public class Manager_Box : MonoBehaviour
         {
             list_table = (IList) Json.Deserialize("[\"work\",\"shcools\"]");
         }
-        this.Panel_menu_info.SetActive(false);
     }
 
     public void Create_table(){
+        this.Panel_menu_info.SetActive(false);
         app.carrot.clear_contain(tr_all_item);
         
         for(int i=1;i<=length_box;i++){
@@ -53,9 +52,9 @@ public class Manager_Box : MonoBehaviour
             box_obj.transform.localScale=new Vector3(1f,1f,1f);
             box_obj.transform.localRotation=Quaternion.identity;
 
-            if (PlayerPrefs.GetString("pi_work_pi_" + i + "_timer") != "")
+            if (PlayerPrefs.GetString(this.id_table +"_pi_" + i + "_timer") != "")
             {
-                string timestampString = PlayerPrefs.GetString("pi_work_pi_" + i + "_timer");
+                string timestampString = PlayerPrefs.GetString(this.id_table+"_pi_" + i + "_timer");
 
                 if (long.TryParse(timestampString, out long timestampMilliseconds))
                 {
@@ -63,6 +62,11 @@ public class Manager_Box : MonoBehaviour
                     box_item.Set_Timer(dateTime);
                     box_item.Set_Tip("Ready");
                 }
+            }
+
+            if (PlayerPrefs.GetString(this.id_table+"_app_id_" + i, "") != "")
+            {
+                box_item.img_icon_extension.gameObject.SetActive(true);
             }
 
             box_item.Set_Act_Click(()=>this.Show_menu_info_by_index(index));
@@ -92,6 +96,16 @@ public class Manager_Box : MonoBehaviour
         app.carrot.play_sound_click();
         this.Panel_menu_info.SetActive(true);
         this.app.carrot.clear_contain(tr_all_btn_info);
+
+        Carrot_Button_Item btn_play_timer = this.Add_btn_info();
+        btn_play_timer.set_icon(app.carrot.game.icon_play_music_game);
+        btn_play_timer.set_label("Play Timer");
+        btn_play_timer.set_act_click(() => this.Act_player_timer_cur());
+
+        Carrot_Button_Item btn_edit_timer = this.Add_btn_info();
+        btn_edit_timer.set_icon(app.carrot.sp_icon_restore);
+        btn_edit_timer.set_label("Set Timer");
+        btn_edit_timer.set_act_click(() => this.Act_player_timer_cur());
 
         string s_id_app = "";
         if (PlayerPrefs.GetString("app_id_" + index_cur) != "") s_id_app = PlayerPrefs.GetString("app_id_" + index_cur);
@@ -176,16 +190,16 @@ public class Manager_Box : MonoBehaviour
 
     private void Act_Edit_app_open(){
         string s_id_app = "";
-        if (PlayerPrefs.GetString("app_id_" + index_cur) != "") s_id_app = PlayerPrefs.GetString("app_id_" + index_cur);
+        if (PlayerPrefs.GetString(this.id_table+"_app_id_" + index_cur) != "") s_id_app = PlayerPrefs.GetString(this.id_table + "_app_id_" + index_cur);
         if (this.box_input != null) this.box_input.close();
-        box_input = this.app.carrot.Show_input("Id App Open", "Enter the name of the application package you want to open", s_id_app);
+        box_input = this.app.carrot.Show_input("Id App Open ("+this.index_cur+")", "Enter the name of the application package you want to open", s_id_app);
         box_input.set_act_done(this.Act_edit_app_oepn_done);
     }
 
     private void Act_edit_app_oepn_done(string s_val)
     {
         if (this.box_input != null) this.box_input.close();
-        PlayerPrefs.SetString("app_id_" + this.index_cur, s_val);
+        PlayerPrefs.SetString(this.id_table+"_app_id_" + this.index_cur, s_val);
         this.Create_table();
     }
 
@@ -230,5 +244,17 @@ public class Manager_Box : MonoBehaviour
         packageManager.Dispose();
         launchIntent.Dispose();
 #endif
+    }
+
+    private void Act_player_timer_cur()
+    {
+        PlayerPrefs.SetString(this.id_table + "_pi_" + this.index_cur + "_timer",this.ConvertToUnixTimestampMilliseconds(DateTime.Now.AddDays(1)).ToString());
+        this.Create_table();
+    }
+
+    long ConvertToUnixTimestampMilliseconds(DateTime dateTime)
+    {
+        DateTimeOffset dateTimeOffset = new DateTimeOffset(dateTime);
+        return dateTimeOffset.ToUnixTimeMilliseconds();
     }
 }

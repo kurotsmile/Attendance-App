@@ -7,6 +7,7 @@ public class Box_item : MonoBehaviour
 {
     public Text txt_name;
     public Text txt_tip;
+    public Image img_icon_extension;
 
     private UnityAction act;
     private float remainingTime;
@@ -17,6 +18,7 @@ public class Box_item : MonoBehaviour
     public void On_Load()
     {
         this.txt_tip.gameObject.SetActive(false);
+        this.img_icon_extension.gameObject.SetActive(false);
     }
 
     public void On_Click(){
@@ -45,7 +47,7 @@ public class Box_item : MonoBehaviour
         if (isCountingDown)
         {
 
-            TimeSpan remainingTime = targetTime - DateTime.Now;
+            TimeSpan remainingTime = targetTime - DateTime.UtcNow;
 
             if (remainingTime.TotalSeconds > 0)
             {
