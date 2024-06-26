@@ -75,6 +75,7 @@ public class Manager_Box : MonoBehaviour
                 box_item.img_icon_extension.gameObject.SetActive(true);
             }
 
+            box_item.index = i;
             box_item.Set_Act_Click(()=>this.Show_menu_info_by_index(index));
             this.list_box.Add(box_item);
         }
@@ -362,5 +363,10 @@ public class Manager_Box : MonoBehaviour
     public string Get_id_table_cur()
     {
         return this.id_table;
+    }
+
+    public List<Box_item> get_list_box()
+    {
+        return this.list_box;
     }
 }

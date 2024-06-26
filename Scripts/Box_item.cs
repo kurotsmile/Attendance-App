@@ -5,15 +5,16 @@ using UnityEngine.UI;
 
 public class Box_item : MonoBehaviour
 {
+    public int index = -1;
     public Text txt_name;
     public Text txt_tip;
     public Image img_icon_extension;
 
     private UnityAction act;
-    private float remainingTime;
     private bool isCountingDown = false;
 
     private DateTime targetTime;
+    public TimeSpan remainingTime;
 
     public void On_Load()
     {
@@ -48,7 +49,7 @@ public class Box_item : MonoBehaviour
         if (isCountingDown)
         {
 
-            TimeSpan remainingTime = targetTime - DateTime.UtcNow;
+            remainingTime = targetTime - DateTime.UtcNow;
 
             if (remainingTime.TotalSeconds > 0)
             {
@@ -80,12 +81,7 @@ public class Box_item : MonoBehaviour
 
     public void ResetCountdown(TimeSpan newCountdownTime)
     {
-        remainingTime = (float)newCountdownTime.TotalSeconds;
+        remainingTime = newCountdownTime;
         isCountingDown = true;
-    }
-
-    public float GetRemainingTime()
-    {
-        return remainingTime;
     }
 }

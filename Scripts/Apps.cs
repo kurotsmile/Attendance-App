@@ -15,6 +15,7 @@ public class Apps : MonoBehaviour
     public Sprite sp_icon_backup;
     public Sprite sp_icon_import;
     public Sprite sp_icon_export;
+    public Sprite sp_icon_sort;
 
     void Start()
     {
