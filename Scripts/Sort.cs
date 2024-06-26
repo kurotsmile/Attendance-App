@@ -1,5 +1,4 @@
 using Carrot;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -65,7 +64,11 @@ public class Sort : MonoBehaviour
         app.carrot.play_sound_click();
         app.manager_Box.get_list_box().Sort((x, y) => x.remainingTime.CompareTo(y.remainingTime));
         List<Box_item> list = app.manager_Box.get_list_box();
-        for (int i = 0; i < list.Count; i++) list[i].gameObject.transform.SetSiblingIndex(i);
+        for (int i = 0; i < list.Count; i++)
+        {
+            list[i].index_list = i;
+            list[i].gameObject.transform.SetSiblingIndex(i);
+        }
     }
 
     private void Sort_timer_z_a()
@@ -75,7 +78,11 @@ public class Sort : MonoBehaviour
         app.carrot.play_sound_click();
         app.manager_Box.get_list_box().Sort((x, y) => y.remainingTime.CompareTo(x.remainingTime));
         List<Box_item> list = app.manager_Box.get_list_box();
-        for (int i = 0; i < list.Count; i++) list[i].gameObject.transform.SetSiblingIndex(i);
+        for (int i = 0; i < list.Count; i++)
+        {
+            list[i].index_list = i;
+            list[i].gameObject.transform.SetSiblingIndex(i);
+        }
     }
 
     private void Sort_index_a_z()
@@ -85,7 +92,11 @@ public class Sort : MonoBehaviour
         app.carrot.play_sound_click();
         app.manager_Box.get_list_box().Sort((x, y) => x.index.CompareTo(y.index));
         List<Box_item> list = app.manager_Box.get_list_box();
-        for (int i = 0; i < list.Count; i++) list[i].gameObject.transform.SetSiblingIndex(i);
+        for (int i = 0; i < list.Count; i++)
+        {
+            list[i].index_list = i;
+            list[i].gameObject.transform.SetSiblingIndex(i);
+        }
     }
 
     private void Sort_index_z_a()
@@ -95,6 +106,10 @@ public class Sort : MonoBehaviour
         app.carrot.play_sound_click();
         app.manager_Box.get_list_box().Sort((x, y) => y.index.CompareTo(x.index));
         List<Box_item> list = app.manager_Box.get_list_box();
-        for (int i = 0; i < list.Count; i++) list[i].gameObject.transform.SetSiblingIndex(i);
+        for (int i = 0; i < list.Count; i++)
+        {
+            list[i].index_list = i;
+            list[i].gameObject.transform.SetSiblingIndex(i);
+        }
     }
 }

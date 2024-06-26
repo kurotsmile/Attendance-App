@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class Box_item : MonoBehaviour
 {
     public int index = -1;
+    public int index_list = -1;
     public Text txt_name;
     public Text txt_tip;
     public Image img_icon_extension;
@@ -16,7 +17,7 @@ public class Box_item : MonoBehaviour
     private DateTime targetTime;
     public TimeSpan remainingTime;
 
-    public void On_Load()
+    public void On_Reset()
     {
         this.txt_tip.gameObject.SetActive(false);
         this.img_icon_extension.gameObject.SetActive(false);

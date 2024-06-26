@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Carrot;
 using SimpleFileBrowser;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Manager_Box : MonoBehaviour
 {
@@ -23,8 +24,8 @@ public class Manager_Box : MonoBehaviour
     private Carrot_Window_Input box_input;
     private IList list_table;
 
-    private int index_cur = -1;
     private List<Box_item> list_box;
+    private Box_item box_cur;
 
     public void On_load(){
 
@@ -51,33 +52,43 @@ public class Manager_Box : MonoBehaviour
             var index=i;
             GameObject box_obj=Instantiate(box_prefab);
             Box_item box_item=box_obj.GetComponent<Box_item>();
-            box_item.On_Load();
+            box_item.On_Reset();
             box_item.txt_name.text=i.ToString();
             box_obj.transform.SetParent(tr_all_item);
             box_obj.transform.localPosition=Vector3.zero;
             box_obj.transform.localScale=new Vector3(1f,1f,1f);
             box_obj.transform.localRotation=Quaternion.identity;
+            box_item.index = i;
+            box_item.index_list = i;
+            box_item.Set_Act_Click(()=>this.Show_menu_info_by_data(box_item));
+            this.list_box.Add(box_item);
+        }
 
-            if (PlayerPrefs.GetString(this.id_table +"_pi_" + i + "_timer") != "")
+        this.Load_meta_data_all_box();
+    }
+
+    private void Load_meta_data_all_box()
+    {
+        for(int i = 0; i < list_box.Count; i++)
+        {
+            this.list_box[i].On_Reset();
+            this.list_box[i].index_list = i;
+            if (PlayerPrefs.GetString(this.id_table + "_pi_" + this.list_box[i].index + "_timer") != "")
             {
-                string timestampString = PlayerPrefs.GetString(this.id_table+"_pi_" + i + "_timer");
+                string timestampString = PlayerPrefs.GetString(this.id_table + "_pi_" + this.list_box[i].index + "_timer");
 
                 if (long.TryParse(timestampString, out long timestampMilliseconds))
                 {
                     DateTime dateTime = DateTimeOffset.FromUnixTimeMilliseconds(timestampMilliseconds).DateTime;
-                    box_item.Set_Timer(dateTime);
-                    box_item.Set_Tip("Ready");
+                    this.list_box[i].Set_Timer(dateTime);
+                    this.list_box[i].Set_Tip("Ready");
                 }
             }
 
-            if (PlayerPrefs.GetString(this.id_table+"_app_id_" + i, "") != "")
+            if (PlayerPrefs.GetString(this.id_table + "_app_id_" + this.list_box[i].index, "") != "")
             {
-                box_item.img_icon_extension.gameObject.SetActive(true);
+                this.list_box[i].img_icon_extension.gameObject.SetActive(true);
             }
-
-            box_item.index = i;
-            box_item.Set_Act_Click(()=>this.Show_menu_info_by_index(index));
-            this.list_box.Add(box_item);
         }
     }
 
@@ -99,10 +110,10 @@ public class Manager_Box : MonoBehaviour
         this.Create_table();
     }
 
-    private void Show_menu_info_by_index(int index){
-        this.index_cur = index;
+    private void Show_menu_info_by_data(Box_item box_item){
+        this.box_cur = box_item;
         this.Un_select_all_box();
-        this.list_box[this.index_cur-1].On_Select();
+        this.list_box[box_item.index_list].On_Select();
         app.carrot.play_sound_click();
         this.Panel_menu_info.SetActive(true);
         this.app.carrot.clear_contain(tr_all_btn_info);
@@ -112,13 +123,13 @@ public class Manager_Box : MonoBehaviour
         btn_play_timer.set_label("Play Timer");
         btn_play_timer.set_act_click(() => this.Act_player_timer_cur());
 
-        Carrot_Button_Item btn_edit_timer = this.Add_btn_info();
+        Carrot_Button_Item btn_edit_timer = this.Add_btn_info(); 
         btn_edit_timer.set_icon(app.carrot.sp_icon_restore);
         btn_edit_timer.set_label("Set Timer");
         btn_edit_timer.set_act_click(() => this.Act_set_timer_cur());
 
         string s_id_app = "";
-        if (PlayerPrefs.GetString(this.id_table+"_app_id_" + index_cur) != "") s_id_app = PlayerPrefs.GetString(this.id_table+"_app_id_" + index_cur);
+        if (PlayerPrefs.GetString(this.id_table+"_app_id_" + box_cur.index) != "") s_id_app = PlayerPrefs.GetString(this.id_table+"_app_id_" + box_cur.index);
         if (s_id_app != "")
         {
             Carrot_Button_Item btn_open_app = this.Add_btn_info();
@@ -153,25 +164,8 @@ public class Manager_Box : MonoBehaviour
 
     public void Btn_close_menu_info(){
         app.carrot.play_sound_click();
-        this.list_box[this.index_cur].Un_select();
+        this.box_cur.Un_select();
         this.Panel_menu_info.SetActive(false);
-    }
-
-    public void Act_import(){
-        app.file.Set_filter(Carrot_File_Data.JsonData);
-        app.file.Open_file(Act_import_done);
-    }
-
-    private void Act_import_done(string[] s_path){
-        string s_data=FileBrowserHelpers.ReadTextFromFile(s_path[0]);
-        IDictionary obj_data = (IDictionary) Json.Deserialize(s_data);
-        foreach (DictionaryEntry entry in obj_data)
-        {
-            string key = (string)entry.Key;
-            var value = entry.Value;
-            PlayerPrefs.SetString(key, value.ToString());
-        }
-        app.carrot.Show_msg("Improt Data","Impport data success!\n"+s_path[0]);
     }
 
     public void Show_List_Table()
@@ -226,17 +220,17 @@ public class Manager_Box : MonoBehaviour
 
     private void Act_Edit_app_open(){
         string s_id_app = "";
-        if (PlayerPrefs.GetString(this.id_table+"_app_id_" + index_cur) != "") s_id_app = PlayerPrefs.GetString(this.id_table + "_app_id_" + index_cur);
+        if (PlayerPrefs.GetString(this.id_table+"_app_id_" + box_cur.index) != "") s_id_app = PlayerPrefs.GetString(this.id_table + "_app_id_" + box_cur.index);
         if (this.box_input != null) this.box_input.close();
-        box_input = this.app.carrot.Show_input("Id App Open ("+this.index_cur+")", "Enter the name of the application package you want to open", s_id_app);
+        box_input = this.app.carrot.Show_input("Id App Open ("+this.box_cur.index+")", "Enter the name of the application package you want to open", s_id_app);
         box_input.set_act_done(this.Act_edit_app_oepn_done);
     }
 
     private void Act_edit_app_oepn_done(string s_val)
     {
         if (this.box_input != null) this.box_input.close();
-        PlayerPrefs.SetString(this.id_table+"_app_id_" + this.index_cur, s_val);
-        this.Create_table();
+        PlayerPrefs.SetString(this.id_table+"_app_id_" + this.box_cur.index, s_val);
+        this.Load_meta_data_all_box();
     }
 
     private void Act_open_link_app(string id_app)
@@ -250,8 +244,8 @@ public class Manager_Box : MonoBehaviour
         app.carrot.play_sound_click();
         DateTime timer_nex = DateTime.Now.AddDays(1);
         timer_nex.AddMinutes(1);
-        PlayerPrefs.SetString(this.id_table + "_pi_" + this.index_cur + "_timer", this.ConvertToUnixTimestampMilliseconds(timer_nex).ToString());
-        this.Create_table();
+        PlayerPrefs.SetString(this.id_table + "_pi_" + this.box_cur.index + "_timer", this.ConvertToUnixTimestampMilliseconds(timer_nex).ToString());
+        this.Load_meta_data_all_box();
         this.OpenApp_by_bundleId(id_app);
     }
 
@@ -294,15 +288,15 @@ public class Manager_Box : MonoBehaviour
     private void Act_player_timer_cur()
     {
         app.carrot.play_sound_click();
-        PlayerPrefs.SetString(this.id_table + "_pi_" + this.index_cur + "_timer",this.ConvertToUnixTimestampMilliseconds(DateTime.Now.AddDays(1)).ToString());
-        this.Create_table();
+        PlayerPrefs.SetString(this.id_table + "_pi_" + this.box_cur.index + "_timer",this.ConvertToUnixTimestampMilliseconds(DateTime.Now.AddDays(1)).ToString());
+        this.Load_meta_data_all_box();
     }
 
     private void Act_set_timer_cur()
     {
         if (box != null) box.close();
         box = app.carrot.Create_Box();
-        box.set_title("Set Timer ("+this.index_cur+")");
+        box.set_title("Set Timer ("+this.box_cur.index+")");
         box.set_icon(app.sp_icon_timer);
 
         Carrot_Box_Item item_hours=box.create_item();
@@ -328,8 +322,8 @@ public class Manager_Box : MonoBehaviour
             int h=int.Parse(item_hours.get_val());
             int m= int.Parse(item_minutes.get_val());
             DateTime dateTime = DateTime.Now.AddHours(h).AddMinutes(m);
-            PlayerPrefs.SetString(this.id_table + "_pi_" + this.index_cur + "_timer", this.ConvertToUnixTimestampMilliseconds(dateTime).ToString());
-            this.Create_table();
+            PlayerPrefs.SetString(this.id_table + "_pi_" + this.box_cur.index + "_timer", this.ConvertToUnixTimestampMilliseconds(dateTime).ToString());
+            this.Load_meta_data_all_box();
             app.carrot.play_sound_click();
             box.close();
         });
@@ -368,5 +362,10 @@ public class Manager_Box : MonoBehaviour
     public List<Box_item> get_list_box()
     {
         return this.list_box;
+    }
+
+    public IList Get_list_table()
+    {
+        return this.list_table;
     }
 }

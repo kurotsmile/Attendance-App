@@ -48,13 +48,4 @@ public class Apps : MonoBehaviour
         carrot.play_sound_click();
         manager_Box.Show_List_Table();
     }
-
-    public void Btn_Export(){
-        carrot.play_sound_click();
-    }
-
-    public void Btn_Import(){
-        carrot.play_sound_click();
-        manager_Box.Act_import();
-    }
 }
