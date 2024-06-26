@@ -2,9 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Carrot;
-using SimpleFileBrowser;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class Manager_Box : MonoBehaviour
 {
@@ -156,56 +154,45 @@ public class Manager_Box : MonoBehaviour
         box.set_icon(app.carrot.icon_carrot_advanced);
         box.set_title("Menu ("+this.box_cur.index+")");
 
-        Carrot_Box_Item item_edit_app=box.create_item("item_edit_app");
-        item_edit_app.set_icon(this.app.carrot.user.icon_user_edit);
-        item_edit_app.set_title("Edit App");
-        item_edit_app.set_tip("Set up app opening by bundle id");
-        item_edit_app.set_act(() => this.Act_Edit_app_open());
-
-        Carrot_Box_Item item_edit_timer = box.create_item("item_edit_timer");
-        item_edit_timer.set_icon(app.carrot.sp_icon_restore);
-        item_edit_timer.set_title("Set Timer");
-        item_edit_timer.set_tip("Set time and change timer");
-        item_edit_timer.set_act(() => this.Act_set_timer_cur());
-
-        Carrot_Box_Item item_del_timer = box.create_item("item_index");
-        item_del_timer.set_icon(app.carrot.sp_icon_del_data);
-        item_del_timer.set_title("Delete Timer");
-        item_del_timer.set_tip("Delete the timer for this object");
-
-        Carrot_Box_Item item_view_info = box.create_item("item_view_info");
-        item_view_info.set_icon(app.carrot.user.icon_user_info);
-        item_view_info.set_title("Info");
-        item_view_info.set_tip("See all information about this object");
-        item_view_info.set_act(() => this.Act_show_info_box());
-
-        Carrot_Box_Item item_close = box.create_item("item_close");
-        item_close.set_icon(app.carrot.icon_carrot_cancel);
-        item_close.set_title("Close");
-        item_close.set_tip("Close menus and options");
-        item_close.set_act(() => this.Btn_close_menu_info());
-    }
-
-    private void Act_show_info_box()
-    {
-        app.carrot.play_sound_click();
-        if (box != null) box.close();
-        this.box = app.carrot.Create_Box();
-        this.box.set_icon(app.carrot.user.icon_user_info);
-        this.box.set_title("Box info ("+this.box_cur.index+")");
-
         Carrot_Box_Item item_index = box.create_item("item_index");
         item_index.set_icon(app.carrot.icon_carrot_app);
         item_index.set_title("Index");
-        item_index.set_tip("Order of elements in the table ("+this.box_cur.index+")");
+        item_index.set_tip("Order of elements in the table (" + this.box_cur.index + ")");
 
         string s_id_app = PlayerPrefs.GetString(this.id_table + "_app_id_" + this.box_cur.index, "");
         if (s_id_app != "")
         {
+            Carrot_Box_Item item_open_app_timer = box.create_item("item_open_app_and_timer");
+            item_open_app_timer.set_icon(app.sp_icon_rocket);
+            item_open_app_timer.set_title("Open App + Timer");
+            item_open_app_timer.set_tip(s_id_app);
+            item_open_app_timer.set_act(() => this.Act_open_link_app_and_act_timer(s_id_app));
+
             Carrot_Box_Item item_app_link = box.create_item("item_app_link");
-            item_app_link.set_icon(app.carrot.icon_carrot_app);
+            item_app_link.set_icon(app.carrot.icon_carrot_link);
             item_app_link.set_title("App open package id");
             item_app_link.set_tip(s_id_app);
+            item_app_link.set_act(() => OpenApp_by_bundleId(s_id_app));
+
+            Carrot_Box_Item item_edit_app = box.create_item("item_edit_app");
+            item_edit_app.set_icon(this.app.carrot.user.icon_user_edit);
+            item_edit_app.set_title("Edit App");
+            item_edit_app.set_tip("Set up app opening by bundle id");
+            item_edit_app.set_act(() => this.Act_Edit_app_open());
+
+            Carrot_Box_Item item_del_app = box.create_item("item_del_app");
+            item_del_app.set_icon(app.carrot.sp_icon_del_data);
+            item_del_app.set_title("Delete App");
+            item_del_app.set_tip("Delete the app for this object");
+            item_del_app.set_act(() => Act_del_app_cur());
+        }
+        else
+        {
+            Carrot_Box_Item item_add_app = box.create_item("item_add_app");
+            item_add_app.set_icon(this.app.carrot.icon_carrot_add);
+            item_add_app.set_title("Add App");
+            item_add_app.set_tip("Set up app opening by bundle id");
+            item_add_app.set_act(() => this.Act_Edit_app_open());
         }
 
         if (this.box_cur.txt_tip.text != "")
@@ -214,8 +201,30 @@ public class Manager_Box : MonoBehaviour
             item_timer.set_icon(app.sp_icon_timer);
             item_timer.set_title("Timer");
             item_timer.set_tip(this.box_cur.txt_tip.text);
+            item_timer.set_act(() => Act_player_timer_cur());
         }
+
+
+
+        Carrot_Box_Item item_edit_timer = box.create_item("item_edit_timer");
+        item_edit_timer.set_icon(app.carrot.sp_icon_restore);
+        item_edit_timer.set_title("Set Timer");
+        item_edit_timer.set_tip("Set time and change timer");
+        item_edit_timer.set_act(() => this.Act_set_timer_cur());
+
+        Carrot_Box_Item item_del_timer = box.create_item("item_del_timer");
+        item_del_timer.set_icon(app.carrot.sp_icon_del_data);
+        item_del_timer.set_title("Delete Timer");
+        item_del_timer.set_tip("Delete the timer for this object");
+        item_del_timer.set_act(()=>Act_del_timer_cur());
+
+        Carrot_Box_Item item_close = box.create_item("item_close");
+        item_close.set_icon(app.carrot.icon_carrot_cancel);
+        item_close.set_title("Close");
+        item_close.set_tip("Close menus and options");
+        item_close.set_act(() => this.Btn_close_menu_info());
     }
+
 
     private Carrot_Button_Item Add_btn_info(){
         GameObject btn_obj=Instantiate(btn_info_prefab);
@@ -356,6 +365,24 @@ public class Manager_Box : MonoBehaviour
         app.carrot.play_sound_click();
         PlayerPrefs.SetString(this.id_table + "_pi_" + this.box_cur.index + "_timer",this.ConvertToUnixTimestampMilliseconds(DateTime.Now.AddDays(1)).ToString());
         this.Load_meta_data_all_box();
+    }
+
+    private void Act_del_timer_cur()
+    {
+        this.box_cur.Act_stop_timer();
+        app.carrot.play_sound_click();
+        PlayerPrefs.DeleteKey(this.id_table + "_pi_" + this.box_cur.index + "_timer");
+        this.Load_meta_data_all_box();
+        if (box != null) box.close();
+    }
+
+    private void Act_del_app_cur()
+    {
+        app.carrot.play_sound_click();
+        PlayerPrefs.DeleteKey(this.id_table + "_app_id_" + this.box_cur.index);
+        this.Load_meta_data_all_box();
+        if (box != null) box.close();
+        this.Panel_menu_info.SetActive(false);
     }
 
     private void Act_set_timer_cur()

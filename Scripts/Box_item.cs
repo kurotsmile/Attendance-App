@@ -10,6 +10,7 @@ public class Box_item : MonoBehaviour
     public Text txt_name;
     public Text txt_tip;
     public Image img_icon_extension;
+    public Image img_icon_pin;
 
     private UnityAction act;
     private bool isCountingDown = false;
@@ -17,10 +18,12 @@ public class Box_item : MonoBehaviour
     private DateTime targetTime;
     public TimeSpan remainingTime;
 
+
     public void On_Reset()
     {
         this.txt_tip.gameObject.SetActive(false);
         this.img_icon_extension.gameObject.SetActive(false);
+        this.img_icon_pin.gameObject.SetActive(false);
         this.GetComponent<Animator>().Play("box_item_nomal");
     }
 
@@ -78,6 +81,14 @@ public class Box_item : MonoBehaviour
     {
         this.txt_name.color = Color.black;
         this.GetComponent<Animator>().enabled = true;
+    }
+
+    public void Act_stop_timer()
+    {
+        this.txt_tip.gameObject.SetActive(false);
+        this.txt_tip.text = "";
+        this.GetComponent<Animator>().Play("box_item_nomal");
+        isCountingDown = false;
     }
 
     public void ResetCountdown(TimeSpan newCountdownTime)
