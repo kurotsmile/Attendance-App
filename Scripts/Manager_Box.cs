@@ -40,7 +40,7 @@ public class Manager_Box : MonoBehaviour
         {
             list_table = (IList) Json.Deserialize("[\"work\",\"shcools\"]");
         }
-    }
+    } 
 
     public void Create_table(){
         this.list_box = new List<Box_item>();
@@ -190,6 +190,14 @@ public class Manager_Box : MonoBehaviour
             item_m.set_title(this.list_table[i].ToString());
             item_m.set_tip("Table " + (i + 1));
             item_m.set_act(() => Act_sel_table(id_table));
+
+            if (id_table == this.id_table)
+            {
+                Carrot_Box_Btn_Item btn_check=item_m.create_item();
+                btn_check.set_icon(app.carrot.icon_carrot_done);
+                btn_check.set_icon_color(Color.white);
+                btn_check.set_color(app.carrot.color_highlight);
+            }
         }
     }
 
@@ -349,5 +357,10 @@ public class Manager_Box : MonoBehaviour
         {
             this.list_box[i].Un_select();
         }
+    }
+
+    public string Get_id_table_cur()
+    {
+        return this.id_table;
     }
 }

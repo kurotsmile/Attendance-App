@@ -12,10 +12,19 @@ public class Apps : MonoBehaviour
     public Sprite sp_icon_length;
     public Sprite sp_icon_timer;
     public Sprite sp_icon_rocket;
+    public Sprite sp_icon_backup;
+    public Sprite sp_icon_import;
+    public Sprite sp_icon_export;
 
     void Start()
     {
-        carrot.Load_Carrot(Check_Exit_app); 
+        carrot.Load_Carrot(Check_Exit_app);
+
+        if (carrot.os_app == OS.Window)
+            file.type = Carrot_File_Type.StandaloneFileBrowser;
+        else
+            file.type = Carrot_File_Type.SimpleFileBrowser;
+
         manager_Box.On_load();
         manager_Box.Create_table();
     }
