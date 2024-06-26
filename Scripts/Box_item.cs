@@ -19,6 +19,7 @@ public class Box_item : MonoBehaviour
     {
         this.txt_tip.gameObject.SetActive(false);
         this.img_icon_extension.gameObject.SetActive(false);
+        this.GetComponent<Animator>().Play("box_item_nomal");
     }
 
     public void On_Click(){
@@ -52,16 +53,30 @@ public class Box_item : MonoBehaviour
             if (remainingTime.TotalSeconds > 0)
             {
                 //this.txt_tip.text = string.Format("{0:D2}:{1:D2}:{2:D2}:{3:D2}",remainingTime.Days, remainingTime.Hours, remainingTime.Minutes, remainingTime.Seconds);
-                this.txt_tip.text = string.Format("{0:D2}:{1:D2}:{2:D2}", remainingTime.Hours, remainingTime.Minutes, remainingTime.Seconds);
+                this.txt_tip.text = string.Format("{0:D2}:{1:D2}:{2:D2}", remainingTime.Hours, remainingTime.Minutes, remainingTime.Seconds);              
             }
             else
             {
                 this.txt_tip.text = "Time's up!";
+                this.GetComponent<Animator>().enabled = true;
+                this.GetComponent<Animator>().Play("Box_items");
             }
 
         }
     }
 
+    public void On_Select()
+    {
+        this.GetComponent<Animator>().Play("box_item_nomal");
+        this.GetComponent<Animator>().enabled = false;
+        this.txt_name.color = Color.red;
+    }
+
+    public void Un_select()
+    {
+        this.txt_name.color = Color.black;
+        this.GetComponent<Animator>().enabled = true;
+    }
 
     public void ResetCountdown(TimeSpan newCountdownTime)
     {

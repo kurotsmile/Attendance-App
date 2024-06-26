@@ -10,7 +10,9 @@ public class Apps : MonoBehaviour
 
     [Header("Asset Icon")]
     public Sprite sp_icon_length;
-    
+    public Sprite sp_icon_timer;
+    public Sprite sp_icon_rocket;
+
     void Start()
     {
         carrot.Load_Carrot(Check_Exit_app); 
