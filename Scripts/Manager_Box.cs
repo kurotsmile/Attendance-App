@@ -123,11 +123,6 @@ public class Manager_Box : MonoBehaviour
         btn_play_timer.set_label("Play Timer");
         btn_play_timer.set_act_click(() => this.Act_player_timer_cur());
 
-        Carrot_Button_Item btn_edit_timer = this.Add_btn_info(); 
-        btn_edit_timer.set_icon(app.carrot.sp_icon_restore);
-        btn_edit_timer.set_label("Set Timer");
-        btn_edit_timer.set_act_click(() => this.Act_set_timer_cur());
-
         string s_id_app = "";
         if (PlayerPrefs.GetString(this.id_table+"_app_id_" + box_cur.index) != "") s_id_app = PlayerPrefs.GetString(this.id_table+"_app_id_" + box_cur.index);
         if (s_id_app != "")
@@ -143,14 +138,83 @@ public class Manager_Box : MonoBehaviour
             btn_open_app_timer.set_act_click(() => this.Act_open_link_app_and_act_timer(s_id_app));
         }
 
-        Carrot_Button_Item btn_edit_link=this.Add_btn_info();
-        btn_edit_link.set_icon(this.app.carrot.user.icon_user_edit);
-        btn_edit_link.set_label("Edit App");
-        btn_edit_link.set_act_click(()=>this.Act_Edit_app_open());
+        Carrot_Button_Item btn_more = this.Add_btn_info();
+        btn_more.set_icon(this.app.carrot.icon_carrot_advanced);
+        btn_more.set_label("More");
+        btn_more.set_act_click(() => this.Show_more_menu());
 
         Carrot_Button_Item btn_item = this.Add_btn_info();
         btn_item.set_label("Close");
         btn_item.set_act_click(() => this.Btn_close_menu_info());
+    }
+
+    private void Show_more_menu()
+    {
+        app.carrot.play_sound_click();
+        if (box != null) box.close();
+        box = app.carrot.Create_Box();
+        box.set_icon(app.carrot.icon_carrot_advanced);
+        box.set_title("Menu ("+this.box_cur.index+")");
+
+        Carrot_Box_Item item_edit_app=box.create_item("item_edit_app");
+        item_edit_app.set_icon(this.app.carrot.user.icon_user_edit);
+        item_edit_app.set_title("Edit App");
+        item_edit_app.set_tip("Set up app opening by bundle id");
+        item_edit_app.set_act(() => this.Act_Edit_app_open());
+
+        Carrot_Box_Item item_edit_timer = box.create_item("item_edit_timer");
+        item_edit_timer.set_icon(app.carrot.sp_icon_restore);
+        item_edit_timer.set_title("Set Timer");
+        item_edit_timer.set_tip("Set time and change timer");
+        item_edit_timer.set_act(() => this.Act_set_timer_cur());
+
+        Carrot_Box_Item item_del_timer = box.create_item("item_index");
+        item_del_timer.set_icon(app.carrot.sp_icon_del_data);
+        item_del_timer.set_title("Delete Timer");
+        item_del_timer.set_tip("Delete the timer for this object");
+
+        Carrot_Box_Item item_view_info = box.create_item("item_view_info");
+        item_view_info.set_icon(app.carrot.user.icon_user_info);
+        item_view_info.set_title("Info");
+        item_view_info.set_tip("See all information about this object");
+        item_view_info.set_act(() => this.Act_show_info_box());
+
+        Carrot_Box_Item item_close = box.create_item("item_close");
+        item_close.set_icon(app.carrot.icon_carrot_cancel);
+        item_close.set_title("Close");
+        item_close.set_tip("Close menus and options");
+        item_close.set_act(() => this.Btn_close_menu_info());
+    }
+
+    private void Act_show_info_box()
+    {
+        app.carrot.play_sound_click();
+        if (box != null) box.close();
+        this.box = app.carrot.Create_Box();
+        this.box.set_icon(app.carrot.user.icon_user_info);
+        this.box.set_title("Box info ("+this.box_cur.index+")");
+
+        Carrot_Box_Item item_index = box.create_item("item_index");
+        item_index.set_icon(app.carrot.icon_carrot_app);
+        item_index.set_title("Index");
+        item_index.set_tip("Order of elements in the table ("+this.box_cur.index+")");
+
+        string s_id_app = PlayerPrefs.GetString(this.id_table + "_app_id_" + this.box_cur.index, "");
+        if (s_id_app != "")
+        {
+            Carrot_Box_Item item_app_link = box.create_item("item_app_link");
+            item_app_link.set_icon(app.carrot.icon_carrot_app);
+            item_app_link.set_title("App open package id");
+            item_app_link.set_tip(s_id_app);
+        }
+
+        if (this.box_cur.txt_tip.text != "")
+        {
+            Carrot_Box_Item item_timer = box.create_item("item_timer");
+            item_timer.set_icon(app.sp_icon_timer);
+            item_timer.set_title("Timer");
+            item_timer.set_tip(this.box_cur.txt_tip.text);
+        }
     }
 
     private Carrot_Button_Item Add_btn_info(){
@@ -166,6 +230,7 @@ public class Manager_Box : MonoBehaviour
         app.carrot.play_sound_click();
         this.box_cur.Un_select();
         this.Panel_menu_info.SetActive(false);
+        if (box != null) box.close();
     }
 
     public void Show_List_Table()
@@ -222,6 +287,7 @@ public class Manager_Box : MonoBehaviour
         string s_id_app = "";
         if (PlayerPrefs.GetString(this.id_table+"_app_id_" + box_cur.index) != "") s_id_app = PlayerPrefs.GetString(this.id_table + "_app_id_" + box_cur.index);
         if (this.box_input != null) this.box_input.close();
+        if (this.box != null) this.box.close();
         box_input = this.app.carrot.Show_input("Id App Open ("+this.box_cur.index+")", "Enter the name of the application package you want to open", s_id_app);
         box_input.set_act_done(this.Act_edit_app_oepn_done);
     }
