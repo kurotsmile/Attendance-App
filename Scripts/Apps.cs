@@ -7,6 +7,7 @@ public class Apps : MonoBehaviour
     public Carrot.Carrot carrot;
     public Manager_Box manager_Box;
     public Carrot_File file;
+    public Pin pin;
 
     [Header("Asset Icon")]
     public Sprite sp_icon_length;
@@ -16,6 +17,7 @@ public class Apps : MonoBehaviour
     public Sprite sp_icon_import;
     public Sprite sp_icon_export;
     public Sprite sp_icon_sort;
+    public Sprite sp_icon_pin;
 
     void Start()
     {
@@ -47,5 +49,11 @@ public class Apps : MonoBehaviour
     public void Show_List_Table(){
         carrot.play_sound_click();
         manager_Box.Show_List_Table();
+    }
+
+    public void Show_List_Pin()
+    {
+        carrot.play_sound_click();
+        pin.Show_list_pin();
     }
 }
