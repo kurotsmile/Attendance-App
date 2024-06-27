@@ -13,6 +13,7 @@ public class Backup : MonoBehaviour
 
     public void Show_menu_backup()
     {
+        app.carrot.play_sound_click();
         if (box != null) box.close();
         box = app.carrot.Create_Box();
         box.set_icon(app.sp_icon_backup);
@@ -68,6 +69,9 @@ public class Backup : MonoBehaviour
 
                 string s_app = PlayerPrefs.GetString(s_name_table + "_app_id_" + i, "");
                 if (s_app != "") data_export[s_name_table + "_app_id_" + i] = s_app;
+
+                string s_pin = PlayerPrefs.GetString(s_name_table + "_pi_" + i, "");
+                if (s_pin != "") data_export[s_name_table + "_pi_" + i] = s_pin;
             }
             
         }

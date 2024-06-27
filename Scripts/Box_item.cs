@@ -14,6 +14,7 @@ public class Box_item : MonoBehaviour
 
     private UnityAction act;
     private bool isCountingDown = false;
+    private bool isSelect = false;
 
     private DateTime targetTime;
     public TimeSpan remainingTime;
@@ -62,8 +63,7 @@ public class Box_item : MonoBehaviour
             else
             {
                 this.txt_tip.text = "Time's up!";
-                this.GetComponent<Animator>().enabled = true;
-                this.GetComponent<Animator>().Play("Box_items");
+                if(this.isSelect==false)this.GetComponent<Animator>().Play("Box_items");
             }
 
         }
@@ -71,15 +71,16 @@ public class Box_item : MonoBehaviour
 
     public void On_Select()
     {
-        this.GetComponent<Animator>().Play("box_item_nomal");
-        this.GetComponent<Animator>().enabled = false;
+        this.isSelect = true;
+        this.GetComponent<Animator>().Play("box_item_select");
         this.txt_name.color = Color.red;
     }
 
     public void Un_select()
     {
+        this.isSelect = false;
         this.txt_name.color = Color.black;
-        this.GetComponent<Animator>().enabled = true;
+        this.GetComponent<Animator>().Play("box_item_nomal");
     }
 
     public void Act_stop_timer()

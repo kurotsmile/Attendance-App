@@ -124,17 +124,28 @@ public class Manager_Box : MonoBehaviour
         this.Panel_menu_info.SetActive(true);
         this.app.carrot.clear_contain(tr_all_btn_info);
 
+        string s_pin = PlayerPrefs.GetString(this.id_table + "_pi_" + this.box_cur.index);
+        if (s_pin == "")
+        {
+            Carrot_Button_Item btn_pin = this.Add_btn_info();
+            btn_pin.set_icon(app.sp_icon_pin);
+            btn_pin.set_label("Set Pin");
+            btn_pin.img_icon.color = app.pin.Get_color_pin_cur();
+            btn_pin.set_act_click(() => this.Act_set_pin_cur());
+        }
+        else
+        {
+            Carrot_Button_Item item_pin = this.Add_btn_info();
+            item_pin.set_icon(app.sp_icon_erase);
+            item_pin.set_label("Erase");
+            item_pin.set_act_click(() => this.Act_del_pin_cur());
+        }
+
         Carrot_Button_Item btn_play_timer = this.Add_btn_info();
         btn_play_timer.set_icon(app.carrot.game.icon_play_music_game);
         btn_play_timer.set_label("Play Timer");
         btn_play_timer.set_act_click(() => this.Act_player_timer_cur());
 
-        Carrot_Button_Item btn_pin = this.Add_btn_info();
-        btn_pin.set_icon(app.pin.Get_icon_sp_by_cur());
-        btn_pin.set_label("Set Pin");
-        btn_pin.img_icon.color = app.pin.Get_color_pin_cur();
-        btn_pin.set_act_click(() => this.Act_set_pin_cur());
-         
         string s_id_app = "";
         if (PlayerPrefs.GetString(this.id_table+"_app_id_" + box_cur.index) != "") s_id_app = PlayerPrefs.GetString(this.id_table+"_app_id_" + box_cur.index);
         if (s_id_app != "")
@@ -172,6 +183,25 @@ public class Manager_Box : MonoBehaviour
         item_index.set_icon(app.carrot.icon_carrot_app);
         item_index.set_title("Index");
         item_index.set_tip("Order of elements in the table (" + this.box_cur.index + ")");
+
+        string s_pin = PlayerPrefs.GetString(this.id_table + "_pi_" + this.box_cur.index);
+        if (s_pin == "")
+        {
+            Carrot_Box_Item item_pin = box.create_item("item_pin");
+            item_pin.set_icon(app.sp_icon_pin);
+            item_pin.set_title("Set Pin");
+            item_pin.set_tip("Set up a pin for this object");
+            item_pin.img_icon.color = app.pin.Get_color_pin_cur();
+            item_pin.set_act(() => this.Act_set_pin_cur());
+        }
+        else
+        {
+            Carrot_Box_Item item_pin = box.create_item("item_del_pin");
+            item_pin.set_icon(app.sp_icon_erase);
+            item_pin.set_title("Delete Pin");
+            item_pin.set_tip("Delete the object's current pin");
+            item_pin.set_act(() => this.Act_del_pin_cur());
+        }
 
         string s_id_app = PlayerPrefs.GetString(this.id_table + "_app_id_" + this.box_cur.index, "");
         if (s_id_app != "")
@@ -318,6 +348,7 @@ public class Manager_Box : MonoBehaviour
         if (this.box_input != null) this.box_input.close();
         PlayerPrefs.SetString(this.id_table+"_app_id_" + this.box_cur.index, s_val);
         this.Load_meta_data_all_box();
+        this.Show_menu_info_by_data(this.box_cur);
     }
 
     private void Act_open_link_app(string id_app)
@@ -387,6 +418,22 @@ public class Manager_Box : MonoBehaviour
         else
             PlayerPrefs.SetString(this.id_table + "_pi_" + this.box_cur.index, app.pin.Get_index_cur().ToString());
         this.Load_meta_data_all_box();
+        if (this.box != null) this.box.close();
+        this.Reset_act_bar_menu_info();
+    }
+
+    private void Act_del_pin_cur()
+    {
+        app.carrot.play_sound_click();
+        PlayerPrefs.DeleteKey(this.id_table + "_pi_" + this.box_cur.index);
+        this.Load_meta_data_all_box();
+        if (this.box != null) this.box.close();
+        this.Reset_act_bar_menu_info();
+    }
+
+    public void Reset_act_bar_menu_info()
+    {
+        if(this.Panel_menu_info.activeInHierarchy) this.Show_menu_info_by_data(this.box_cur);
     }
 
     private void Act_del_timer_cur()
