@@ -87,6 +87,14 @@ public class Manager_Box : MonoBehaviour
             {
                 this.list_box[i].img_icon_extension.gameObject.SetActive(true);
             }
+
+            string s_pin = PlayerPrefs.GetString(this.id_table + "_pi_" + list_box[i].index);
+            if (s_pin != "")
+            {
+                int index_pin = int.Parse(s_pin);
+                this.list_box[i].img_icon_pin.gameObject.SetActive(true);
+                this.list_box[i].img_icon_pin.color = app.pin.Get_color_pin(index_pin);
+            }
         }
     }
 
@@ -121,6 +129,12 @@ public class Manager_Box : MonoBehaviour
         btn_play_timer.set_label("Play Timer");
         btn_play_timer.set_act_click(() => this.Act_player_timer_cur());
 
+        Carrot_Button_Item btn_pin = this.Add_btn_info();
+        btn_pin.set_icon(app.pin.Get_icon_sp_by_cur());
+        btn_pin.set_label("Set Pin");
+        btn_pin.img_icon.color = app.pin.Get_color_pin_cur();
+        btn_pin.set_act_click(() => this.Act_set_pin_cur());
+         
         string s_id_app = "";
         if (PlayerPrefs.GetString(this.id_table+"_app_id_" + box_cur.index) != "") s_id_app = PlayerPrefs.GetString(this.id_table+"_app_id_" + box_cur.index);
         if (s_id_app != "")
@@ -203,8 +217,6 @@ public class Manager_Box : MonoBehaviour
             item_timer.set_tip(this.box_cur.txt_tip.text);
             item_timer.set_act(() => Act_player_timer_cur());
         }
-
-
 
         Carrot_Box_Item item_edit_timer = box.create_item("item_edit_timer");
         item_edit_timer.set_icon(app.carrot.sp_icon_restore);
@@ -364,6 +376,16 @@ public class Manager_Box : MonoBehaviour
     {
         app.carrot.play_sound_click();
         PlayerPrefs.SetString(this.id_table + "_pi_" + this.box_cur.index + "_timer",this.ConvertToUnixTimestampMilliseconds(DateTime.Now.AddDays(1)).ToString());
+        this.Load_meta_data_all_box();
+    }
+
+    private void Act_set_pin_cur()
+    {
+        app.carrot.play_sound_click();
+        if (app.pin.Get_index_cur() == 0)
+            PlayerPrefs.DeleteKey(this.id_table + "_pi_" + this.box_cur.index);
+        else
+            PlayerPrefs.SetString(this.id_table + "_pi_" + this.box_cur.index, app.pin.Get_index_cur().ToString());
         this.Load_meta_data_all_box();
     }
 

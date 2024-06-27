@@ -18,6 +18,7 @@ public class Apps : MonoBehaviour
     public Sprite sp_icon_export;
     public Sprite sp_icon_sort;
     public Sprite sp_icon_pin;
+    public Sprite sp_icon_erase;
 
     void Start()
     {

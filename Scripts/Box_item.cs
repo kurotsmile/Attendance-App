@@ -28,7 +28,6 @@ public class Box_item : MonoBehaviour
     }
 
     public void On_Click(){
-        Debug.Log("Click");
         act?.Invoke();
     }
 
