@@ -222,6 +222,12 @@ public class Manager_Box : MonoBehaviour
             item_pin.set_act(() => this.Act_del_pin_cur());
         }
 
+        Carrot_Box_Item item_people = box.create_item("item_people");
+        item_people.set_icon(app.carrot.user.icon_user_register);
+        item_people.set_title("Set People");
+        item_people.set_tip("Set up a People for this object");
+        item_people.set_act(() => this.Act_set_people_cur());
+
         string s_id_app = PlayerPrefs.GetString(this.id_table + "_app_id_" + this.box_cur.index, "");
         if (s_id_app != "")
         {
@@ -357,16 +363,28 @@ public class Manager_Box : MonoBehaviour
         PlayerPrefs.SetString("list_table", Json.Serialize(this.list_table));
     }
 
+    private void Act_set_people_cur()
+    {
+        app.carrot.play_sound_click();
+        string s_people = "";
+        if (PlayerPrefs.GetString(this.id_table + "_p_" + box_cur.index) != "") s_people = PlayerPrefs.GetString(this.id_table + "_p_" + box_cur.index);
+        if (this.box_input != null) this.box_input.close();
+        if (this.box != null) this.box.close();
+        box_input = this.app.carrot.Show_input("Tag a person's name", "Enter the name of the person, employee, or student you want to refer to", s_people);
+       // box_input.set_act_done(this.Act_edit_app_oepn_done);
+    }
+
     private void Act_Edit_app_open(){
+        app.carrot.play_sound_click();
         string s_id_app = "";
         if (PlayerPrefs.GetString(this.id_table+"_app_id_" + box_cur.index) != "") s_id_app = PlayerPrefs.GetString(this.id_table + "_app_id_" + box_cur.index);
         if (this.box_input != null) this.box_input.close();
         if (this.box != null) this.box.close();
         box_input = this.app.carrot.Show_input("Id App Open ("+this.box_cur.index+")", "Enter the name of the application package you want to open", s_id_app);
-        box_input.set_act_done(this.Act_edit_app_oepn_done);
+        box_input.set_act_done(this.Act_edit_app_open_done);
     }
 
-    private void Act_edit_app_oepn_done(string s_val)
+    private void Act_edit_app_open_done(string s_val)
     {
         if (this.box_input != null) this.box_input.close();
         PlayerPrefs.SetString(this.id_table+"_app_id_" + this.box_cur.index, s_val);
@@ -389,6 +407,7 @@ public class Manager_Box : MonoBehaviour
         this.Load_meta_data_all_box();
         this.OpenApp_by_bundleId(id_app);
     }
+
 
     private void OpenApp_by_bundleId(string bundleId)
     {
