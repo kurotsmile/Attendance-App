@@ -9,7 +9,9 @@ public class Box_item : MonoBehaviour
     public int index_list = -1;
     public Text txt_name;
     public Text txt_tip;
-    public Image img_icon_extension;
+    public Image img_icon_link;
+    public Image img_icon_user;
+    public Image img_icon_note;
     public Image img_icon_pin;
 
     private UnityAction act;
@@ -23,7 +25,9 @@ public class Box_item : MonoBehaviour
     public void On_Reset()
     {
         this.txt_tip.gameObject.SetActive(false);
-        this.img_icon_extension.gameObject.SetActive(false);
+        this.img_icon_link.gameObject.SetActive(false);
+        this.img_icon_user.gameObject.SetActive(false);
+        this.img_icon_note.gameObject.SetActive(false);
         this.img_icon_pin.gameObject.SetActive(false);
         this.GetComponent<Animator>().Play("box_item_nomal");
     }

@@ -75,6 +75,9 @@ public class Backup : MonoBehaviour
 
                 string s_people = PlayerPrefs.GetString(s_name_table + "_p_" + i, "");
                 if (s_people != "") data_export[s_name_table + "_p_" + i] = s_people;
+
+                string s_note = PlayerPrefs.GetString(s_name_table + "_note_" + i, "");
+                if (s_note != "") data_export[s_name_table + "_note_" + i] = s_note;
             }
             
         }

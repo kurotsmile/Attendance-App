@@ -89,7 +89,17 @@ public class Manager_Box : MonoBehaviour
 
             if (PlayerPrefs.GetString(this.id_table + "_app_id_" + this.list_box[i].index, "") != "")
             {
-                this.list_box[i].img_icon_extension.gameObject.SetActive(true);
+                this.list_box[i].img_icon_link.gameObject.SetActive(true);
+            }
+
+            if (PlayerPrefs.GetString(this.id_table + "_p_" + this.list_box[i].index, "") != "")
+            {
+                this.list_box[i].img_icon_user.gameObject.SetActive(true);
+            }
+
+            if (PlayerPrefs.GetString(this.id_table + "_note_" + this.list_box[i].index, "") != "")
+            {
+                this.list_box[i].img_icon_note.gameObject.SetActive(true);
             }
 
             string s_pin = PlayerPrefs.GetString(this.id_table + "_pi_" + list_box[i].index);
@@ -208,7 +218,7 @@ public class Manager_Box : MonoBehaviour
         if (box != null) box.close();
         box = app.carrot.Create_Box();
         box.set_icon(app.carrot.icon_carrot_advanced);
-        box.set_title("Menu ("+this.box_cur.index+")");
+        box.set_title("Menu (" + this.box_cur.index + ")");
 
         Carrot_Box_Item item_index = box.create_item("item_index");
         item_index.set_icon(app.carrot.icon_carrot_app);
@@ -250,9 +260,10 @@ public class Manager_Box : MonoBehaviour
 
             Carrot_Box_Btn_Item btn_del = item_people.create_item();
             btn_del.set_icon(app.carrot.sp_icon_del_data);
-
+            btn_del.set_color(app.carrot.color_highlight);
+            btn_del.set_act(() => Act_del_people_cur());
         }
-            
+
         item_people.set_act(() => this.Act_set_people_cur());
 
         string s_id_app = PlayerPrefs.GetString(this.id_table + "_app_id_" + this.box_cur.index, "");
@@ -291,18 +302,29 @@ public class Manager_Box : MonoBehaviour
             item_add_app.set_act(() => this.Act_Edit_app_open());
         }
 
+        string s_timer = PlayerPrefs.GetString(this.id_table + "_pi_" + this.box_cur.index + "_timer");
+
+        Carrot_Box_Item item_timer = box.create_item("item_timer");
+
         if (this.box_cur.txt_tip.text != "")
         {
-            Carrot_Box_Item item_timer = box.create_item("item_timer");
             item_timer.set_icon(app.sp_icon_timer);
             item_timer.set_title("Timer");
             item_timer.set_tip(this.box_cur.txt_tip.text);
             item_timer.set_act(() => Act_player_timer_cur());
+        }
 
-            Carrot_Box_Btn_Item btn_timer_play = item_timer.create_item();
-            btn_timer_play.set_icon(app.carrot.game.icon_play_music_game);
-            btn_timer_play.set_color(app.carrot.color_highlight);
-            Destroy(btn_timer_play.GetComponent<Button>());
+        Carrot_Box_Btn_Item btn_timer_play = item_timer.create_item();
+        btn_timer_play.set_icon(app.carrot.game.icon_play_music_game);
+        btn_timer_play.set_color(app.carrot.color_highlight);
+        Destroy(btn_timer_play.GetComponent<Button>());
+
+        if (s_timer != "")
+        {
+            Carrot_Box_Btn_Item item_del_timer = item_timer.create_item();
+            item_del_timer.set_icon(app.carrot.sp_icon_del_data);
+            item_del_timer.set_color(app.carrot.color_highlight);
+            item_del_timer.set_act(() => Act_del_timer_cur());
         }
 
         Carrot_Box_Item item_edit_timer = box.create_item("item_edit_timer");
@@ -311,11 +333,19 @@ public class Manager_Box : MonoBehaviour
         item_edit_timer.set_tip("Set time and change timer");
         item_edit_timer.set_act(() => this.Act_set_timer_cur());
 
-        Carrot_Box_Item item_del_timer = box.create_item("item_del_timer");
-        item_del_timer.set_icon(app.carrot.sp_icon_del_data);
-        item_del_timer.set_title("Delete Timer");
-        item_del_timer.set_tip("Delete the timer for this object");
-        item_del_timer.set_act(()=>Act_del_timer_cur());
+        string s_note = PlayerPrefs.GetString(this.id_table + "_note_" + this.box_cur.index, "");
+        Carrot_Box_Item item_note = box.create_item("item_note");
+        item_note.set_icon(app.sp_icon_note);
+        item_note.set_title("Note");
+        if (s_note == "")
+        {
+            item_note.set_tip("Set up notes for this object");
+        }
+        else
+        {
+            item_note.set_tip(s_note);
+        }
+        item_note.set_act(() => this.Act_set_note_cur());
 
         Carrot_Box_Item item_close = box.create_item("item_close");
         item_close.set_icon(app.carrot.icon_carrot_cancel);
@@ -413,6 +443,26 @@ public class Manager_Box : MonoBehaviour
         if (box != null) box.close();
     }
 
+    private void Act_set_note_cur()
+    {
+        app.carrot.play_sound_click();
+        string s_note = "";
+        if (PlayerPrefs.GetString(this.id_table + "_note_" + box_cur.index) != "") s_note = PlayerPrefs.GetString(this.id_table + "_note_" + box_cur.index);
+        if (this.box_input != null) this.box_input.close();
+        if (this.box != null) this.box.close();
+        box_input = this.app.carrot.Show_input("Note", "Enter a note for this object", s_note);
+        box_input.set_act_done(this.Act_done_note);
+    }
+
+    private void Act_done_note(string s_val)
+    {
+        app.carrot.play_sound_click();
+        PlayerPrefs.SetString(this.id_table + "_note_" + box_cur.index, s_val);
+        if (this.box_input != null) this.box_input.close();
+        if (this.box != null) this.box.close();
+        this.Load_meta_data_all_box();
+    }
+
     private void Act_set_people_cur()
     {
         app.carrot.play_sound_click();
@@ -422,6 +472,15 @@ public class Manager_Box : MonoBehaviour
         if (this.box != null) this.box.close();
         box_input = this.app.carrot.Show_input("Tag a person's name", "Enter the name of the person, employee, or student you want to refer to", s_people);
         box_input.set_act_done(this.Act_people_done);
+    }
+
+    private void Act_del_people_cur()
+    {
+        app.carrot.play_sound_click();
+        PlayerPrefs.DeleteKey(this.id_table + "_p_" + box_cur.index);
+        if (this.box_input != null) this.box_input.close();
+        if (this.box != null) this.box.close();
+        this.Load_meta_data_all_box();
     }
 
     private void Act_people_done(string s_val)
@@ -466,7 +525,6 @@ public class Manager_Box : MonoBehaviour
         this.Load_meta_data_all_box();
         this.OpenApp_by_bundleId(id_app);
     }
-
 
     private void OpenApp_by_bundleId(string bundleId)
     {
