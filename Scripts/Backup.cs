@@ -72,6 +72,9 @@ public class Backup : MonoBehaviour
 
                 string s_pin = PlayerPrefs.GetString(s_name_table + "_pi_" + i, "");
                 if (s_pin != "") data_export[s_name_table + "_pi_" + i] = s_pin;
+
+                string s_people = PlayerPrefs.GetString(s_name_table + "_p_" + i, "");
+                if (s_people != "") data_export[s_name_table + "_p_" + i] = s_people;
             }
             
         }
