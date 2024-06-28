@@ -26,6 +26,7 @@ public class Manager_Box : MonoBehaviour
     private List<Box_item> list_box;
     private Box_item box_cur;
     private int columer = 5;
+    private Carrot_Box_Item item_count;
 
     public void On_load(){
 
@@ -244,6 +245,34 @@ public class Manager_Box : MonoBehaviour
             item_pin.set_act(() => this.Act_del_pin_cur());
         }
 
+        string s_count= PlayerPrefs.GetString(this.id_table + "_count_" + this.box_cur.index);
+        this.item_count = box.create_item("item_count");
+        item_count.set_icon(app.sp_icon_count);
+        item_count.set_title("Amount");
+        item_count.set_act(() => this.Act_set_amount_cur());
+        if (s_count == "")
+            item_count.set_tip("Set up Amount for this object");
+        else
+            item_count.set_tip(s_count);
+
+        Carrot_Box_Btn_Item btn_add = item_count.create_item();
+        btn_add.set_icon(app.carrot.icon_carrot_add);
+        btn_add.set_color(app.carrot.color_highlight);
+        btn_add.set_act(() =>
+        {
+            app.carrot.play_sound_click();
+            Act_count_add();
+        });
+
+        Carrot_Box_Btn_Item btn_minus = item_count.create_item();
+        btn_minus.set_icon(app.sp_icon_minus);
+        btn_minus.set_color(app.carrot.color_highlight);
+        btn_minus.set_act(() =>
+        {
+            app.carrot.play_sound_click();
+            Act_count_minus();
+        });
+
         string s_people = PlayerPrefs.GetString(this.id_table + "_p_" + box_cur.index, "");
         Carrot_Box_Item item_people = box.create_item("item_people");
         if (s_people == "")
@@ -424,6 +453,24 @@ public class Manager_Box : MonoBehaviour
         if (box != null) box.close();
     }
 
+    private void Act_count_add()
+    {
+        string s_count = PlayerPrefs.GetString(this.id_table + "_count_" + this.box_cur.index,"0");
+        int amount = int.Parse(s_count);
+        amount++;
+        if(this.item_count!=null) this.item_count.txt_tip.text=amount.ToString();
+        PlayerPrefs.SetString(this.id_table + "_count_" + this.box_cur.index, amount.ToString());
+    }
+
+    private void Act_count_minus()
+    {
+        string s_count = PlayerPrefs.GetString(this.id_table + "_count_" + this.box_cur.index, "0");
+        int amount = int.Parse(s_count);
+        amount--;
+        if (this.item_count != null) this.item_count.txt_tip.text = amount.ToString();
+        PlayerPrefs.SetString(this.id_table + "_count_" + this.box_cur.index, amount.ToString());
+    }
+
     private void Act_box_add_table()
     {
         if (this.box_input != null) this.box_input.close();
@@ -461,6 +508,24 @@ public class Manager_Box : MonoBehaviour
         if (this.box_input != null) this.box_input.close();
         if (this.box != null) this.box.close();
         this.Load_meta_data_all_box();
+    }
+
+    private void Act_set_amount_cur()
+    {
+        app.carrot.play_sound_click();
+        string s_count = PlayerPrefs.GetString(this.id_table + "_count_" + this.box_cur.index, "0");
+        if (this.box_input != null) this.box_input.close();
+        if (this.box != null) this.box.close();
+        box_input = this.app.carrot.Show_input("Tag a person's name", "Enter the name of the person, employee, or student you want to refer to", s_count);
+        box_input.set_act_done(this.Act_set_amount_done);
+    }
+
+    private void Act_set_amount_done(string s_val)
+    {
+        app.carrot.play_sound_click();
+        PlayerPrefs.SetString(this.id_table + "_count_" + this.box_cur.index, s_val);
+        if (this.item_count!=null) this.item_count.txt_tip.text = s_val;
+        if (this.box_input != null) this.box_input.close();
     }
 
     private void Act_set_people_cur()
@@ -522,6 +587,7 @@ public class Manager_Box : MonoBehaviour
         DateTime timer_nex = DateTime.Now.AddDays(1);
         timer_nex.AddMinutes(1);
         PlayerPrefs.SetString(this.id_table + "_pi_" + this.box_cur.index + "_timer", this.ConvertToUnixTimestampMilliseconds(timer_nex).ToString());
+        this.Act_count_add();
         this.Load_meta_data_all_box();
         this.OpenApp_by_bundleId(id_app);
     }
