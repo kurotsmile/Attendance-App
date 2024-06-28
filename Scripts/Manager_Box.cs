@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Carrot;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Manager_Box : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class Manager_Box : MonoBehaviour
 
     private List<Box_item> list_box;
     private Box_item box_cur;
+    private int columer = 5;
 
     public void On_load(){
 
@@ -39,13 +41,15 @@ public class Manager_Box : MonoBehaviour
         {
             list_table = (IList) Json.Deserialize("[\"work\",\"shcools\"]");
         }
+        this.columer= PlayerPrefs.GetInt("table_columer", 5);
     } 
 
     public void Create_table(){
         this.list_box = new List<Box_item>();
         this.Panel_menu_info.SetActive(false);
         app.carrot.clear_contain(tr_all_item);
-        
+
+        this.tr_all_item.GetComponent<GridLayoutGroup>().constraintCount = this.columer;
         for(int i=1;i<=length_box;i++){
             var index=i;
             GameObject box_obj=Instantiate(box_prefab);
@@ -114,6 +118,21 @@ public class Manager_Box : MonoBehaviour
         this.app.carrot.Show_msg("Change the number of elements successfully!\n("+s_val+" Box)");
         box_input.close();
         this.Create_table();
+    }
+
+    public void Show_Change_Columer_Box()
+    {
+        box_input = this.app.carrot.Show_input("Length Columer", "Enter number columer table box", this.Get_num_columer().ToString(), Window_Input_value_Type.input_field);
+        box_input.set_act_done(this.Act_change_number_columer);
+    }
+
+    private void Act_change_number_columer(string s_val)
+    {
+        app.carrot.play_sound_click();
+        this.columer=int.Parse(s_val);
+        this.tr_all_item.GetComponent<GridLayoutGroup>().constraintCount = this.columer;
+        PlayerPrefs.SetInt("table_columer", this.columer);
+        box_input.close();
     }
 
     private void Show_menu_info_by_data(Box_item box_item){
@@ -246,6 +265,11 @@ public class Manager_Box : MonoBehaviour
             item_timer.set_title("Timer");
             item_timer.set_tip(this.box_cur.txt_tip.text);
             item_timer.set_act(() => Act_player_timer_cur());
+
+            Carrot_Box_Btn_Item btn_timer_play = item_timer.create_item();
+            btn_timer_play.set_icon(app.carrot.game.icon_play_music_game);
+            btn_timer_play.set_color(app.carrot.color_highlight);
+            Destroy(btn_timer_play.GetComponent<Button>());
         }
 
         Carrot_Box_Item item_edit_timer = box.create_item("item_edit_timer");
@@ -266,7 +290,6 @@ public class Manager_Box : MonoBehaviour
         item_close.set_tip("Close menus and options");
         item_close.set_act(() => this.Btn_close_menu_info());
     }
-
 
     private Carrot_Button_Item Add_btn_info(){
         GameObject btn_obj=Instantiate(btn_info_prefab);
@@ -529,5 +552,15 @@ public class Manager_Box : MonoBehaviour
     public IList Get_list_table()
     {
         return this.list_table;
+    }
+
+    public int Get_length_box()
+    {
+        return this.length_box;
+    }
+
+    public int Get_num_columer()
+    {
+        return this.columer;
     }
 }
