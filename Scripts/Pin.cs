@@ -2,6 +2,7 @@ using Carrot;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.Events;
 
 public class Pin : MonoBehaviour
 {
@@ -12,7 +13,9 @@ public class Pin : MonoBehaviour
     [Header("Ui Obj")]
     public Image img_icon_pin_menu;
     private int index_pin_cur = 1;
+    private int index_pin_edit = 1;
     private Carrot_Box box;
+    private Carrot_Window_Input box_input = null;
     private Carrot_Window_Msg msg = null;
     private int[] coun_pin;
     private bool is_show_pin = false;
@@ -22,7 +25,13 @@ public class Pin : MonoBehaviour
         coun_pin = new int[pin_color.Length];
     }
 
+
     public void Show_list_pin()
+    {
+        this.list_pin();
+    }
+
+    public void list_pin(UnityAction<int> act_sel=null)
     {
         app.carrot.play_sound_click();
         box = app.carrot.Create_Box();
@@ -30,18 +39,28 @@ public class Pin : MonoBehaviour
         box.set_title("List Pin");
 
         this.Check_length_pin();
-        Carrot_Box_Btn_Item btn_del_all=box.create_btn_menu_header(app.carrot.sp_icon_del_data);
-        btn_del_all.set_act(() => Act_del_all_pin());
 
+        if (act_sel == null)
+        {
+            Carrot_Box_Btn_Item btn_del_all = box.create_btn_menu_header(app.carrot.sp_icon_del_data);
+            btn_del_all.set_act(() => Act_del_all_pin());
+        }
+
+        string s_name_table = app.manager_Box.Get_id_table_cur();
         for (int i = 1; i < pin_color.Length; i++)
         {
             var index_pin = i;
             Carrot_Box_Item item_pin = box.create_item("item_pin_" + i);
             item_pin.set_icon(app.sp_icon_pin);
-            item_pin.img_icon.color = pin_color[i]; 
-            item_pin.set_title("Pin " +i);
-            item_pin.set_tip("Pin for box (" + coun_pin[i]+")");
-            item_pin.set_act(() => Set_Pin_for_box(index_pin));
+            item_pin.img_icon.color = pin_color[i];
+
+            string s_name_pin = PlayerPrefs.GetString(this.app.manager_Box.Get_id_table_cur() + "_pin_" + i, "");
+            if(s_name_pin=="")
+                item_pin.set_title("Pin " +i);
+            else
+                item_pin.set_title(s_name_pin);
+
+            item_pin.set_tip("Number of pinned objects (" + coun_pin[i]+")");
 
             if (i == this.index_pin_cur)
             {
@@ -51,21 +70,39 @@ public class Pin : MonoBehaviour
                 Destroy(btn_sel.GetComponent<Button>());
             }
 
-            Carrot_Box_Btn_Item btn_del = item_pin.create_item();
-            btn_del.set_icon(this.app.sp_icon_erase);
-            btn_del.set_color(app.carrot.color_highlight);
-            btn_del.set_act(() =>
+            if (act_sel == null)
             {
-                this.Act_del_all_pin_by_type(index_pin);
-            });
+                item_pin.set_act(() => Set_Pin_for_box(index_pin));
 
-            Carrot_Box_Btn_Item btn_tag = item_pin.create_item();
-            btn_tag.set_icon(this.app.sp_icon_tager);
-            btn_tag.set_color(app.carrot.color_highlight);
-            btn_tag.set_act(()=>Act_show_pin_by_type(index_pin));
+                Carrot_Box_Btn_Item btn_edit = item_pin.create_item();
+                btn_edit.set_icon(this.app.carrot.user.icon_user_edit);
+                btn_edit.set_color(app.carrot.color_highlight);
+                btn_edit.set_act(() => Act_show_edit_pin(index_pin));
+
+                Carrot_Box_Btn_Item btn_del = item_pin.create_item();
+                btn_del.set_icon(this.app.sp_icon_erase);
+                btn_del.set_color(app.carrot.color_highlight);
+                btn_del.set_act(() =>
+                {
+                    this.Act_del_all_pin_by_type(index_pin);
+                });
+
+                Carrot_Box_Btn_Item btn_tag = item_pin.create_item();
+                btn_tag.set_icon(this.app.sp_icon_tager);
+                btn_tag.set_color(app.carrot.color_highlight);
+                btn_tag.set_act(() => Act_show_pin_by_type(index_pin));
+            }
+            else
+            {
+                item_pin.set_act(() =>
+                {
+                    box.close();
+                    act_sel(index_pin);
+                });
+            }
         }
 
-        if (is_show_pin)
+        if (is_show_pin==true&&act_sel==null)
         {
             Carrot_Box_Item item_pin = box.create_item("item_pin_cancel");
             item_pin.set_icon(app.carrot.icon_carrot_cancel);
@@ -189,5 +226,22 @@ public class Pin : MonoBehaviour
     public int Get_index_cur()
     {
         return this.index_pin_cur;
+    }
+
+    private void Act_show_edit_pin(int index_pin)
+    {
+        string s_pin_name = PlayerPrefs.GetString(this.app.manager_Box.Get_id_table_cur()+"_pin_" + index_pin, "Pin " + index_pin);
+        this.index_pin_edit = index_pin;
+        if (this.box_input != null) this.box_input.close();
+        box_input = this.app.carrot.Show_input("Name this pin ("+index_pin+")", "Enter a name for this pin group", s_pin_name);
+        box_input.set_act_done(this.Act_done_edit_pin);
+    }
+
+    private void Act_done_edit_pin(string s_val)
+    {
+        PlayerPrefs.SetString(this.app.manager_Box.Get_id_table_cur() + "_pin_" +index_pin_edit, s_val);
+        if (this.box_input != null) this.box_input.close();
+        if (this.box != null) this.box.close();
+        this.Show_list_pin();
     }
 }

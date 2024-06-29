@@ -81,6 +81,9 @@ public class Backup : MonoBehaviour
 
                 string s_count = PlayerPrefs.GetString(s_name_table + "_count_" + i, "");
                 if (s_count != "") data_export[s_name_table + "_count_" + i] = s_count;
+
+                string s_link = PlayerPrefs.GetString(s_name_table + "_link_" + i, "");
+                if (s_link != "") data_export[s_name_table + "_link_" + i] = s_link;
             }
             
         }
