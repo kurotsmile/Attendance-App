@@ -27,6 +27,8 @@ public class Apps : MonoBehaviour
     public Sprite sp_icon_list;
     public Sprite sp_icon_link_web;
     public Sprite sp_icon_start_timer;
+    public Sprite sp_icon_sort_asc;
+    public Sprite sp_icon_sort_desc;
 
     [Header("Sound")]
     public AudioSource sound_bk;

@@ -7,6 +7,8 @@ public class Box_item : MonoBehaviour
 {
     public int index = -1;
     public int index_list = -1;
+    public string s_people_name;
+    public int amount = 0;
     public Text txt_name;
     public Text txt_tip;
     public Image img_icon_link;
