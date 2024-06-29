@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum Type_Sort_Box {timer_a,timer_z,index_a,index_z,amount_a,amount_z}
+public enum Type_Sort_Box {timer_a,timer_z,index_a,index_z,amount_a,amount_z,name_a,name_z}
 public class Sort : MonoBehaviour
 {
     [Header("Obj Main")]
@@ -58,9 +58,23 @@ public class Sort : MonoBehaviour
         Carrot_Box_Item sort_count_z = box.create_item("sort_count_z");
         sort_count_z.set_icon(app.sp_icon_sort_desc);
         sort_count_z.set_title("Sort Amount a->z");
-        sort_count_z.set_tip("Sort in ascending chronological order");
+        sort_count_z.set_tip("Sort in descending chronological order");
         sort_count_z.set_act(() => this.Sort_amount(false));
         if (type_sort == Type_Sort_Box.amount_z) this.Add_btn_check(sort_count_z);
+
+        Carrot_Box_Item sort_name_a = box.create_item("sort_name_a");
+        sort_name_a.set_icon(app.sp_icon_sort_asc);
+        sort_name_a.set_title("Sort Name z->a");
+        sort_name_a.set_tip("Sort in ascending chronological order");
+        sort_name_a.set_act(() => this.Sort_name(true));
+        if (type_sort == Type_Sort_Box.name_a) this.Add_btn_check(sort_name_a);
+
+        Carrot_Box_Item sort_name_z = box.create_item("sort_name_z");
+        sort_name_z.set_icon(app.sp_icon_sort_desc);
+        sort_name_z.set_title("Sort Name a->z");
+        sort_name_z.set_tip("Sort in descending chronological order");
+        sort_name_z.set_act(() => this.Sort_name(false));
+        if (type_sort == Type_Sort_Box.name_z) this.Add_btn_check(sort_name_z);
     }
 
     private void Add_btn_check(Carrot_Box_Item item)
@@ -91,6 +105,10 @@ public class Sort : MonoBehaviour
         for (int i = 0; i < list.Count; i++)
         {
             list[i].index_list = i;
+            if (list[i].s_people_name.Trim() != "")
+                list[i].txt_name.text = list[i].index + " (" + list[i].s_people_name + ")";
+            else
+                list[i].txt_name.text = list[i].index.ToString();
             list[i].gameObject.transform.SetSiblingIndex(i);
         }
     }
@@ -115,6 +133,10 @@ public class Sort : MonoBehaviour
         for (int i = 0; i < list.Count; i++)
         {
             list[i].index_list = i;
+            if (list[i].s_people_name.Trim() != "")
+                list[i].txt_name.text = list[i].index + " (" + list[i].s_people_name + ")";
+            else
+                list[i].txt_name.text = list[i].index.ToString();
             list[i].gameObject.transform.SetSiblingIndex(i);
         }
     }
@@ -139,6 +161,34 @@ public class Sort : MonoBehaviour
         {
             list[i].index_list = i;
             list[i].txt_name.text = list[i].index+" ("+list[i].amount+")";
+            list[i].gameObject.transform.SetSiblingIndex(i);
+        }
+    }
+
+
+    private void Sort_name(bool is_asc)
+    {
+        if (box != null) box.close();
+        app.carrot.play_sound_click();
+        if (is_asc)
+        {
+            this.type_sort = Type_Sort_Box.name_a;
+            app.manager_Box.get_list_box().Sort((x, y) => x.s_people_name.CompareTo(y.s_people_name));
+        }
+        else
+        {
+            this.type_sort = Type_Sort_Box.name_z;
+            app.manager_Box.get_list_box().Sort((x, y) => y.s_people_name.CompareTo(x.s_people_name));
+        }
+
+        List<Box_item> list = app.manager_Box.get_list_box();
+        for (int i = 0; i < list.Count; i++)
+        {
+            list[i].index_list = i;
+            if (list[i].s_people_name.Trim() != "")
+                list[i].txt_name.text = list[i].index + " (" + list[i].s_people_name + ")";
+            else
+                list[i].txt_name.text = list[i].index.ToString();
             list[i].gameObject.transform.SetSiblingIndex(i);
         }
     }

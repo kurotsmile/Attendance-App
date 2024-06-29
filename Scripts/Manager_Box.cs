@@ -97,9 +97,6 @@ public class Manager_Box : MonoBehaviour
 
             if (PlayerPrefs.GetString(this.id_table + "_link_" + this.list_box[i].index, "") != "") this.list_box[i].img_icon_link.gameObject.SetActive(true);
 
-
-            if (PlayerPrefs.GetString(this.id_table + "_p_" + this.list_box[i].index, "") != "") this.list_box[i].img_icon_user.gameObject.SetActive(true);
-
             if (PlayerPrefs.GetString(this.id_table + "_note_" + this.list_box[i].index, "") != "") this.list_box[i].img_icon_note.gameObject.SetActive(true);
 
             string s_pin = PlayerPrefs.GetString(this.id_table + "_pi_" + list_box[i].index);
@@ -115,10 +112,12 @@ public class Manager_Box : MonoBehaviour
             {
                 this.list_box[i].txt_name.text = this.list_box[i].index.ToString()+" - "+s_people;
                 this.list_box[i].s_people_name = s_people;
+                this.list_box[i].img_icon_user.gameObject.SetActive(true);
             }
             else
             {
                 this.list_box[i].txt_name.text = this.list_box[i].index.ToString();
+                this.list_box[i].img_icon_user.gameObject.SetActive(false);
             }
         }
     }

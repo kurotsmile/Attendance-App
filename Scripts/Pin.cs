@@ -23,8 +23,8 @@ public class Pin : MonoBehaviour
     public void On_load()
     {
         coun_pin = new int[pin_color.Length];
+        this.index_pin_cur = PlayerPrefs.GetInt("sel_pin", 1);
     }
-
 
     public void Show_list_pin()
     {
@@ -208,6 +208,7 @@ public class Pin : MonoBehaviour
 
     public void Set_Pin_for_box(int index_pin)
     {
+        PlayerPrefs.SetInt("sel_pin", index_pin);
         index_pin_cur = index_pin;
         app.manager_Box.Reset_act_bar_menu_info();
         if (box != null) box.close();
