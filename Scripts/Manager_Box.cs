@@ -592,7 +592,7 @@ public class Manager_Box : MonoBehaviour
         string s_count = PlayerPrefs.GetString(this.id_table + "_count_" + this.box_cur.index, "0");
         if (this.box_input != null) this.box_input.close();
         if (this.box != null) this.box.close();
-        box_input = this.app.carrot.Show_input("Tag a person's name", "Enter the name of the person, employee, or student you want to refer to", s_count);
+        box_input = this.app.carrot.Show_input("Amount", "Changing the quantity, the indicator counter represents growth", s_count);
         box_input.set_act_done(this.Act_set_amount_done);
     }
 
